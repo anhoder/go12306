@@ -97,8 +97,8 @@ func Request(data string, cookieStr, url string, res interface{}, headers map[st
 	}
 	defer resp.Body.Close()
 
-	fmt.Println(string(respBody))
 	respBody = bytes.TrimPrefix(respBody, []byte("\xef\xbb\xbf"))
+	// fmt.Println(string(respBody))
 	err = json.Unmarshal(respBody, res)
 	if err != nil {
 		seelog.Tracef("json unmarshal fail: %v, %v, %v", err, string(respBody), url)
@@ -141,6 +141,8 @@ func RequestGet(cookieStr, url string, res interface{}, headers map[string]strin
 	}
 	defer resp.Body.Close()
 
+	respBody = bytes.TrimPrefix(respBody, []byte("\xef\xbb\xbf"))
+	// fmt.Println(string(respBody))
 	err = json.Unmarshal(respBody, res)
 	if err != nil {
 		return err
@@ -182,6 +184,8 @@ func RequestGetWithoutJson(cookieStr, url string, headers map[string]string) ([]
 	}
 	defer resp.Body.Close()
 
+	respBody = bytes.TrimPrefix(respBody, []byte("\xef\xbb\xbf"))
+	// fmt.Println(string(respBody))
 	// 添加cookie
 	setCookies := resp.Header.Values("Set-Cookie")
 	AddCookieStr(setCookies)
@@ -218,6 +222,9 @@ func RequestGetWithCDN(cookieStr, url string, res interface{}, headers map[strin
 	}
 	defer resp.Body.Close()
 
+	respBody = bytes.TrimPrefix(respBody, []byte("\xef\xbb\xbf"))
+	// fmt.Println(string(respBody))
+
 	seelog.Tracef("url: %v, response: %v, cdn: %s", url, string(respBody), cdn)
 
 	if res != nil {
@@ -240,6 +247,8 @@ func EncodeParam(r *http.Request, param interface{}) error {
 		return err
 	}
 
+	respBody = bytes.TrimPrefix(respBody, []byte("\xef\xbb\xbf"))
+	// fmt.Println(string(respBody))
 	err = json.Unmarshal(respBody, param)
 	if err != nil {
 		return err

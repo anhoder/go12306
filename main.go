@@ -145,7 +145,7 @@ func CommandStart() {
 
 	startCheckLogin()
 
-Reorder:
+	// Reorder:
 	searchParam := new(module.SearchParam)
 	var trainStr, seatStr, passengerStr string
 	isNate := "0"
@@ -185,13 +185,14 @@ Search:
 
 	if err != nil {
 		utils.AddBlackList(trainData.TrainNo)
+		time.Sleep(time.Duration(utils.GetRand(utils.SearchInterval[0], utils.SearchInterval[1])) * time.Millisecond)
 		goto Search
 	}
 
 	if *wxrobot != "" {
 		utils.SendWxrootMessage(*wxrobot, fmt.Sprintf("车次：%s 购买成功, 请登陆12306查看", trainData.TrainNo))
 	}
-	goto Reorder
+	// goto Reorder
 }
 
 func getTrainInfo(searchParam *module.SearchParam, trainMap map[string]bool, seatSlice []string, isNate string) (*module.TrainData, bool, error) {
@@ -258,13 +259,21 @@ func getTrainInfo(searchParam *module.SearchParam, trainMap map[string]bool, sea
 }
 
 func getUserInfo(searchParam *module.SearchParam, trainStr, seatStr, passengerStr, isNate *string) {
-	fmt.Println("请输入日期 起始站 到达站: ")
-	fmt.Scanf("%s %s %s", &searchParam.TrainDate, &searchParam.FromStationName, &searchParam.ToStationName)
+	fmt.Printf("日期: %s 起始站: %s 到达站: %s\n", utils.TrainInfo.Date, utils.TrainInfo.StartStation, utils.TrainInfo.EndStation)
+	// fmt.Scanf("%s %s %s", &searchParam.TrainDate, &searchParam.FromStationName, &searchParam.ToStationName)
+	searchParam.TrainDate = utils.TrainInfo.Date
+	searchParam.FromStationName = utils.TrainInfo.StartStation
+	searchParam.ToStationName = utils.TrainInfo.EndStation
 	if searchParam.TrainDate == "" || searchParam.FromStationName == "" || searchParam.ToStationName == "" {
 		return
 	}
 	searchParam.FromStation = utils.Station[searchParam.FromStationName]
 	searchParam.ToStation = utils.Station[searchParam.ToStationName]
+
+	if utils.TrainInfo.IssueTime.After(time.Now()) {
+		fmt.Printf("未到放票时间: %s\n", utils.TrainInfo.IssueTime)
+		time.Sleep(time.Until(utils.TrainInfo.IssueTime) + 10*time.Millisecond)
+	}
 
 	trains, err := action.GetTrainInfo(searchParam)
 	if err != nil {
@@ -276,11 +285,13 @@ func getUserInfo(searchParam *module.SearchParam, trainStr, seatStr, passengerSt
 			t.TrainNo, t.Status, t.FromStationName, t.ToStationName, t.StartTime, t.ArrivalTime, t.DistanceTime, t.SeatInfo["二等座"], t.SeatInfo["一等座"], t.SeatInfo["商务座"], t.SeatInfo["软卧"], t.SeatInfo["硬卧"], t.SeatInfo["软座"], t.SeatInfo["硬座"], t.SeatInfo["无座"]))
 	}
 
-	fmt.Println("请输入车次(多个#分隔):")
-	fmt.Scanf("%s", trainStr)
+	fmt.Printf("车次: %s\n", utils.TrainInfo.TrainNo)
+	*trainStr = utils.TrainInfo.TrainNo
+	// fmt.Scanf("%s", trainStr)
 
-	fmt.Println("请输入座位类型(多个#分隔，一等座，二等座，硬座，软卧，硬卧等):")
-	fmt.Scanf("%s", seatStr)
+	fmt.Printf("座位类型: %s\n", utils.TrainInfo.SeatType)
+	*seatStr = utils.TrainInfo.SeatType
+	// fmt.Scanf("%s", seatStr)
 
 	submitToken, err := action.GetRepeatSubmitToken()
 	if err != nil {
@@ -293,16 +304,16 @@ func getUserInfo(searchParam *module.SearchParam, trainStr, seatStr, passengerSt
 		return
 	}
 	for _, p := range passengers.Data.NormalPassengers {
-		fmt.Println(fmt.Sprintf("乘客：%s", p.Alias))
+		fmt.Printf("乘客：%s\n", p.Alias)
 	}
 
-	fmt.Println("请输入乘客姓名(多个#分隔): ")
-	fmt.Scanf("%s", passengerStr)
+	fmt.Printf("乘客姓名: %s\n", utils.TrainInfo.Passenger)
+	*passengerStr = utils.TrainInfo.Passenger
+	// fmt.Scanf("%s", passengerStr)
 
-	fmt.Println("是否候补(0：否，1：是): ")
-	fmt.Scanf("%s", isNate)
-
-	return
+	fmt.Printf("是否候补: %s\n", utils.TrainInfo.IsNate)
+	*isNate = utils.TrainInfo.IsNate
+	// fmt.Scanf("%s", isNate)
 }
 
 func startOrder(searchParam *module.SearchParam, trainData *module.TrainData, passengerMap map[string]bool) error {
