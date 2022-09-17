@@ -1,17 +1,19 @@
 package utils
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/cihub/seelog"
-	"github.com/yincongcyincong/go12306/module"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/cihub/seelog"
+	"github.com/yincongcyincong/go12306/module"
 )
 
 var (
@@ -95,6 +97,8 @@ func Request(data string, cookieStr, url string, res interface{}, headers map[st
 	}
 	defer resp.Body.Close()
 
+	fmt.Println(string(respBody))
+	respBody = bytes.TrimPrefix(respBody, []byte("\xef\xbb\xbf"))
 	err = json.Unmarshal(respBody, res)
 	if err != nil {
 		seelog.Tracef("json unmarshal fail: %v, %v, %v", err, string(respBody), url)
