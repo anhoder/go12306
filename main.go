@@ -184,7 +184,7 @@ Search:
 	}
 
 	if err != nil {
-		utils.AddBlackList(trainData.TrainNo)
+		// utils.AddBlackList(trainData.TrainNo)
 		time.Sleep(time.Duration(utils.GetRand(utils.SearchInterval[0], utils.SearchInterval[1])) * time.Millisecond)
 		goto Search
 	}
@@ -272,18 +272,18 @@ func getUserInfo(searchParam *module.SearchParam, trainStr, seatStr, passengerSt
 
 	if utils.TrainInfo.IssueTime.After(time.Now()) {
 		fmt.Printf("未到放票时间: %s\n", utils.TrainInfo.IssueTime)
-		time.Sleep(time.Until(utils.TrainInfo.IssueTime) + 10*time.Millisecond)
+		time.Sleep(time.Until(utils.TrainInfo.IssueTime) + 5*time.Millisecond)
 	}
 
-	trains, err := action.GetTrainInfo(searchParam)
-	if err != nil {
-		seelog.Errorf("查询车站失败:%v", err)
-		return
-	}
-	for _, t := range trains {
-		fmt.Println(fmt.Sprintf("车次: %s, 状态: %s, 始发车站: %s, 终点站:%s,  %s: %s, 历时：%s, 二等座: %s, 一等座: %s, 商务座: %s, 软卧: %s, 硬卧: %s，软座: %s，硬座: %s， 无座: %s,",
-			t.TrainNo, t.Status, t.FromStationName, t.ToStationName, t.StartTime, t.ArrivalTime, t.DistanceTime, t.SeatInfo["二等座"], t.SeatInfo["一等座"], t.SeatInfo["商务座"], t.SeatInfo["软卧"], t.SeatInfo["硬卧"], t.SeatInfo["软座"], t.SeatInfo["硬座"], t.SeatInfo["无座"]))
-	}
+	// trains, err := action.GetTrainInfo(searchParam)
+	// if err != nil {
+	// 	seelog.Errorf("查询车站失败:%v", err)
+	// 	return
+	// }
+	// for _, t := range trains {
+	// 	fmt.Println(fmt.Sprintf("车次: %s, 状态: %s, 始发车站: %s, 终点站:%s,  %s: %s, 历时：%s, 二等座: %s, 一等座: %s, 商务座: %s, 软卧: %s, 硬卧: %s，软座: %s，硬座: %s， 无座: %s,",
+	// 		t.TrainNo, t.Status, t.FromStationName, t.ToStationName, t.StartTime, t.ArrivalTime, t.DistanceTime, t.SeatInfo["二等座"], t.SeatInfo["一等座"], t.SeatInfo["商务座"], t.SeatInfo["软卧"], t.SeatInfo["硬卧"], t.SeatInfo["软座"], t.SeatInfo["硬座"], t.SeatInfo["无座"]))
+	// }
 
 	fmt.Printf("车次: %s\n", utils.TrainInfo.TrainNo)
 	*trainStr = utils.TrainInfo.TrainNo
@@ -293,19 +293,19 @@ func getUserInfo(searchParam *module.SearchParam, trainStr, seatStr, passengerSt
 	*seatStr = utils.TrainInfo.SeatType
 	// fmt.Scanf("%s", seatStr)
 
-	submitToken, err := action.GetRepeatSubmitToken()
-	if err != nil {
-		seelog.Errorf("获取提交数据失败:%v", err)
-		return
-	}
-	passengers, err := action.GetPassengers(submitToken)
-	if err != nil {
-		seelog.Errorf("获取用户失败:%v", err)
-		return
-	}
-	for _, p := range passengers.Data.NormalPassengers {
-		fmt.Printf("乘客：%s\n", p.Alias)
-	}
+	// submitToken, err := action.GetRepeatSubmitToken()
+	// if err != nil {
+	// 	seelog.Errorf("获取提交数据失败:%v", err)
+	// 	return
+	// }
+	// passengers, err := action.GetPassengers(submitToken)
+	// if err != nil {
+	// 	seelog.Errorf("获取用户失败:%v", err)
+	// 	return
+	// }
+	// for _, p := range passengers.Data.NormalPassengers {
+	// 	fmt.Printf("乘客：%s\n", p.Alias)
+	// }
 
 	fmt.Printf("乘客姓名: %s\n", utils.TrainInfo.Passenger)
 	*passengerStr = utils.TrainInfo.Passenger

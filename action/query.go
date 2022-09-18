@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/yincongcyincong/go12306/module"
-	"github.com/yincongcyincong/go12306/utils"
 	"net/url"
 	"regexp"
 	"strings"
+
+	"github.com/yincongcyincong/go12306/module"
+	"github.com/yincongcyincong/go12306/utils"
 )
 
 var (
@@ -128,7 +129,7 @@ func GetPassengers(submitToken *module.SubmitToken) (*module.PassengerRes, error
 			p.PassengerType, p.PassengerName, p.PassengerIdTypeCode, p.PassengerIdNo, p.MobileNo, p.AllEncStr)
 		oldPassengerStr := fmt.Sprintf("%s,%s,%s,%s_",
 			p.PassengerName, p.PassengerIdTypeCode, p.PassengerIdNo, p.PassengerType)
-		passengerInfo := fmt.Sprintf("%s#%s#1#%s#%s;",p.PassengerType, p.PassengerName, p.PassengerIdNo,p.AllEncStr)
+		passengerInfo := fmt.Sprintf("%s#%s#1#%s#%s;", p.PassengerType, p.PassengerName, p.PassengerIdNo, p.AllEncStr)
 		p.PassengerTicketStr = passengerTicketStr
 		p.OldPassengerStr = oldPassengerStr
 		p.PassengerInfo = passengerInfo
@@ -141,7 +142,7 @@ func GetPassengers(submitToken *module.SubmitToken) (*module.PassengerRes, error
 				"1", p.PassengerName, p.PassengerIdTypeCode, p.PassengerIdNo, p.MobileNo, p.AllEncStr)
 			tmpPassenger.OldPassengerStr = fmt.Sprintf("%s,%s,%s,%s_",
 				p.PassengerName, p.PassengerIdTypeCode, p.PassengerIdNo, "1")
-			tmpPassenger.PassengerInfo = fmt.Sprintf("%s#%s#1#%s#%s;","1", p.PassengerName, p.PassengerIdNo,p.AllEncStr)
+			tmpPassenger.PassengerInfo = fmt.Sprintf("%s#%s#1#%s#%s;", "1", p.PassengerName, p.PassengerIdNo, p.AllEncStr)
 
 			// 把不是特殊票的名称改成特殊票
 			switch p.PassengerType {
@@ -174,11 +175,11 @@ func CheckUser() error {
 	}
 
 	if res.Status && res.HTTPStatus != 200 {
-		return errors.New(fmt.Sprintf("检查用户失败:%+v",res))
+		return errors.New(fmt.Sprintf("检查用户失败:%+v", res))
 	}
 
 	if !res.Data.Flag {
-		return errors.New(fmt.Sprintf("检查用户失败:%+v",res))
+		return errors.New(fmt.Sprintf("检查用户失败:%+v", res))
 	}
 	return nil
 
